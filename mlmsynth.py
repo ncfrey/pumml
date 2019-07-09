@@ -30,7 +30,7 @@ References:
 
 __author__ = "Nathan C. Frey, Jin Wang"
 __copyright__ = "MIT License"
-__version__ = "0.1"
+__version__ = "0.0.1"
 __maintainer__ = "Nathan C. Frey"
 __email__ = "n.frey@seas.upenn.edu"
 __status__ = "Development"
