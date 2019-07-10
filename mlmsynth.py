@@ -320,6 +320,7 @@ class PULearner():
         feat_importances = np.sum(feat_rank_rp, axis=1)
 
         df_U = self.df_U
+        df_U = df_U._get_numeric_data()
         df_U_copy = df_U.drop(columns=['PU_label'])
         feat_names = df_U_copy.columns
 

@@ -42,7 +42,7 @@ class PULearnerTest(unittest.TestCase):
 
     def test_get_feat_importances(self):
         pu_stats = self.pu_stats
-        self.pul.get_feat_importances(pu_stats, plot_format='png')
+        self.pul.get_feat_importances(pu_stats)
 
 class PUInteractTest(unittest.TestCase):
 
