@@ -1,6 +1,7 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.cluster import KMeans
+from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import precision_recall_curve
 from sklearn.model_selection import RepeatedKFold
@@ -30,7 +31,7 @@ References:
 
 __author__ = "Nathan C. Frey, Jin Wang"
 __copyright__ = "MIT License"
-__version__ = "0.1"
+__version__ = "0.0.1"
 __maintainer__ = "Nathan C. Frey"
 __email__ = "n.frey@seas.upenn.edu"
 __status__ = "Development"
@@ -51,6 +52,13 @@ class PULearner():
 
         Attributes:
             pu_stats (dict): Outputs of cv_baggingDT
+            df_U (DataFrame): Unlabeled data.
+            df_P (DataFrame): Positive data.
+
+            synth_scores (list): Synthesizability scores (between 0 and 1) of unlabeled samples.
+            labels (list): Likely synthesizable (1) or not (0)
+            feat_importances (DataFrame): Feature importances from trained
+                decision tree classifiers. Index corresponds to feature index in original data. 
 
         """
 
@@ -78,10 +86,13 @@ class PULearner():
                 training.
 
         """
-
-        # Preprocess data
+        print('Start PU Learning.')
+        
+        # Preprocess data and set attributes
         df = pd.read_json(pu_data)
-        X_P, X_U = self._process_pu_data(df)
+        df_P, df_U, X_P, X_U = self._process_pu_data(df)
+        self.df_P = df_P
+        self.df_U = df_U
 
         # Split data into training and test splits for k-fold CV
         kfold = RepeatedKFold(n_splits=splits, n_repeats=repeats, 
@@ -198,7 +209,7 @@ class PULearner():
             prob_U_rp[:,i] = prob_U[:,i * splits:(i+1) * splits].mean(axis=1)
             feat_rank_rp[:,i] = feat_rank[:, i * splits:(i+1) * splits].mean(axis=1)
             tpr_rp[i] = tprs[i * splits:(i+1) * splits].mean()
-            scores_rp[i]=scores[i * splits:(i+1) * splits].mean()
+            scores_rp[i] = scores[i * splits:(i+1) * splits].mean()
 
         label_U_rp[np.where(prob_U_rp > 0.5)] = 1
         prob = prob_U_rp.mean(axis=1)
@@ -257,7 +268,89 @@ class PULearner():
 
         return lower, upper
 
-    def _process_pu_data(self, data):
+    def corr_heatmap(self, pu_stats, num_feats=10):
+        """Plot correlation matrix between synthesizability and features.
+
+        cv_baggingDT must be run first.
+
+        Args:
+            pu_stats (dict): Output from cv_baggingDT.
+            num_feats (int): How many features to consider.
+
+        Returns:
+            None (generates plots)
+
+        """
+
+        df_U = self.df_U
+        df_U_copy = df_U.drop(columns=['PU_label'])
+
+        # Get normalized, sorted & ranked list of most important features
+        synth_scores = self.pu_stats['prob']
+        df_U_copy['synth_score'] = synth_scores
+
+        # Make correlation matrix of top "num_feats" features
+        corrmat = df_U_copy.corr()
+        cols = corrmat.nlargest(num_feats, 'synth_score')['synth_score'].index
+        cm = np.corrcoef(df_U_copy[cols].values.T)
+
+        fig, ax = plt.subplots(1,1)
+        hm = sns.heatmap(cm, ax=ax, cbar=True, annot=True, square=True, fmt='.2f',annot_kws={'size': 7}, yticklabels=cols.values, xticklabels=cols.values)
+
+        #figure = hm.get_figure()
+        #figure.savefig('corr_map.png')
+        self.save_plot('corr_map.png', fig, ax)
+
+    def get_feat_importances(self, pu_stats, plot_format=''):
+        """Process output from PU learning k-fold cross validation.
+
+        cv_baggingDT must be run first.
+
+        If plot_format is specified, a feature importance plot will
+        be saved.
+
+        Args:
+            pu_stats (dict): Output from PULearner.cv_baggingDT
+            plot_format (str): svg, png, or pdf file format for saving simple visualizations of feature importance and correlation. 
+
+        """
+
+        # Feature importances for individual repetitions of kfold CV
+        feat_rank_rp = pu_stats['feat_rank_rp']
+        feat_importances = np.sum(feat_rank_rp, axis=1)
+
+        df_U = self.df_U
+        df_U = df_U._get_numeric_data()
+        df_U_copy = df_U.drop(columns=['PU_label'])
+        feat_names = df_U_copy.columns
+
+        # Index corresponds to feature in original data
+        df_feat = pd.DataFrame(columns=['feature', 'importance'])
+        df_feat['feature'] = feat_names
+        df_feat['importance'] = feat_importances
+
+        # Sort by importance
+        df_feat_sort = df_feat.sort_values(by='importance', ascending=False)
+        max_value = df_feat['importance'].max()
+
+        # Normalize to 1
+        df_feat_sort['importance'] = df_feat_sort['importance'] / max_value  
+
+        # Set feature importance attribute
+        self.feat_importances = df_feat
+
+        if plot_format in ['svg', 'pdf', 'png']:
+
+            # Feature importance plot
+            fig, ax = plt.subplots(figsize=(10,4))
+            with sns.axes_style(style='ticks'):
+                sns.barplot(x='feature', y='importance', data=df_feat_sort)
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", fontsize=7)
+            filename = 'feat_importance.' + plot_format
+            self.save_plot(filename, fig, ax)
+
+    @staticmethod
+    def _process_pu_data(data):
         """Utility method for processing input data.
 
         Args:
@@ -272,15 +365,32 @@ class PULearner():
         df_P = data.query("PU_label == 1")  # Positive value is 1
         df_U = data.query("PU_label == 0")  # Unlabeled value is 0
 
-        # Chop off PU label
-        X_P = np.asarray(df_P)[:,:-1]
-        X_U = np.asarray(df_U)[:,:-1]
+        # Chop off PU label and drop non-numeric columns for sklearn
+        X_P = np.asarray(df_P._get_numeric_data())[:,:-1]
+        X_U = np.asarray(df_U._get_numeric_data())[:,:-1]
 
-        return X_P, X_U
+        return df_P, df_U, X_P, X_U
+
+    @staticmethod
+    def save_plot(filename, fig, ax):
+        """Utility method for saving simple visualizations.
+
+        Args:
+            filename (str): Name ending in .svg, .png, or .pdf
+            fig, ax (objects): Matplotlib objects.
+
+        Returns:
+            None
+
+        """
+
+        sns.set_style('ticks')
+        fig.tight_layout()
+        fig.savefig(filename)
 
 
 class PUInteract():
-    def __init__(self):
+    def __init__(self, df_parent, pu_parent, df_child, pu_child, merge_on=(), cols=()):
         """Consider parent and child phase PU learning scores.
 
         This class looks at PU learning scores for parent bulk
@@ -289,24 +399,127 @@ class PUInteract():
         in structural/electronic properties to predict (parent, child)
         pairs that can be synthesized.
 
-        TODO:
-            * Implement
+        Parent and child must be linked by a column that allows the dataframes to be merged. There should also be additional features that characterize the structural and chemical differences between parents and children, e.g. changes in bond lengths, etc.
 
-        """
-
-        pass 
-
-
-class PUOutput():
-    def __init__(self, pu_stats):
-        """Process output from PU learning k-fold cross validation.
-
-        This class processes the output into human readable format
-        and assists in visualization of results.
+        Unsupervised clustering models are used to identify synthesizable (parent/child) pairs.
 
         Args:
-            pu_stats (dict): Output from PULearner.cv_baggingDT
+            df_parent (str): Parent data filename.
+            pu_parent (dict): Output from PULearner.cv_baggingDT.
+            df_child (str): Child data filename.
+            pu_child (dict): Output from PULearner.cv_baggingDT.
+            merge_on (tuple): Column name(s) on which to merge.
+            cols (tuple): Column names to use as features. If empty, use all possible columns. 
+
+        Attributes:
+            merged_df (DataFrame): (Parent, child) pair data.
+            X (array): Array representation of merged_df.
+
+        Returns:
+            None
 
         """
 
-        pass
+        df_parent = pd.read_json(df_parent)
+        df_child = pd.read_json(df_child)
+
+        # Set scores from PULearner
+        df_parent['synth_score'] = 1
+        df_child['synth_score'] = 1
+
+        df_parent.loc[df_parent.eval('PU_label == 0'), 'synth_score'] = pu_parent['prob']
+        df_child.loc[df_child.eval('PU_label == 0'), 'synth_score'] = pu_child['prob']
+
+        # Merge parent and child dfs
+        merge_on = list(merge_on)
+        df = pd.merge(df_parent, df_child, on=merge_on, how='outer', suffixes=['_p','_c'])
+        df.drop(columns=['PU_label_p', 'PU_label_c'], inplace=True, axis=1)
+        
+        if cols:
+            df = df[list(cols)]
+
+        self.merged_df = df
+        self.X = np.array(df)
+
+    def do_kmeans(self, n_clusters=2, seed=42):
+        """Do k-means clustering on (parent, child) pairs.
+
+        Args:
+            n_clusters (int): Number of clusters.
+            seed (int): Fix random seed for kmeans reproducibility.
+
+        Returns:
+            kmeans_output (dict): kmeans cluster centers, cluster labels for each (parent, child)
+
+        """
+
+        np.random.seed(seed)
+        km = KMeans(n_clusters=n_clusters, random_state=seed)
+
+        km.fit(self.X)
+        kmeans_output = {'cluster_centers': km.cluster_centers_, 
+        'cluster_labels': km.labels_}
+
+        return kmeans_output
+
+    def do_gmixture(self, n_components=2, seed=42):
+        """
+        Estimate parameters of a Gaussian mixture distribution of (parent, child) data.
+
+        Args:
+            n_components (int): Number of components in GMM.
+            seed (int): Random seed.
+
+        Returns:
+            gmm_output (dict): Predicted labels of (parent, child) pairs and predicted posterior probabilities of each component.
+
+        """
+
+        np.random.seed(seed)
+        gmm = GaussianMixture(n_components=n_components, random_state=seed, covariance_type='full')
+
+        gmm.fit(self.X)
+        gmm_labels = gmm.predict(self.X)
+        gmm_prob = gmm.predict_proba(self.X)[:,0]
+        gmm_output = {'gmm_labels': gmm_labels, 'gmm_prob': gmm_prob}
+
+        return gmm_output
+
+    def do_bgm(self, n_components=6, seed=42):
+        """Bayesian Gaussian Mixture.
+
+        Infer the effective number of components in a Gaussian Mixture Model via variational Bayesian estimation.
+
+        n_effective_componenents < n_components if the model sets some weights close to 0.
+
+        Args:
+            n_components (int): Number of components in GMM.
+            seed (int): Random seed.
+
+        Returns:
+            bgm_output (dict): Labels and probabilities.
+
+        """
+
+        np.random.seed(seed)
+        bgm = BayesianGaussianMixture(n_components=n_components, covariance_type='full', weight_concentration_prior=1e-2, weight_concentration_prior_type='dirichlet_process', mean_precision_prior=1e-2, init_params='random', max_iter=100, random_state=seed)
+
+        bgm.fit(self.X)
+        bgm_labels = bgm.predict(self.X)
+        bgm_prob = bgm.predict_proba(self.X)[:,0]
+
+        bgm_output = {'bgm_labels': bgm_labels, 'bgm_prob': bgm_prob}
+
+        return bgm_output
+
+
+
+
+
+
+
+        
+
+
+
+
