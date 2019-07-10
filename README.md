@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/ncfrey/mlmsynth.svg?branch=master)](https://travis-ci.com/ncfrey/mlmsynth)
+
 # mlmsynth
 Machine Learning for Materials Synthesis (MLMSynth) is a code that adapts semi-supervised positive and unlabeled (PU) machine learning to predict the "synthesizability" of bulk and 2D materials. 
 
