@@ -16,7 +16,7 @@ class PULearnerTest(unittest.TestCase):
         cls.max_df_fname = os.path.join(test_dir, 'MAX_dataset.json')
         cls.mx_df_fname = os.path.join(test_dir, 'MX_dataset.json')
         cls.pul = PULearner()
-        cls.pu_stats = cls.pul.cv_baggingDT(pu_data=cls.max_df_fname, repeats=5, bags=10, filename='stats.json')
+        cls.pu_stats = cls.pul.cv_baggingDT(pu_data=cls.max_df_fname, repeats=5, bags=10)
  
     def setUp(self):
         pass
