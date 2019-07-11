@@ -268,7 +268,7 @@ class PULearner():
 
         return lower, upper
 
-    def corr_heatmap(self, pu_stats, num_feats=10):
+    def corr_heatmap(self, pu_stats, num_feats=10, fname=''):
         """Plot correlation matrix between synthesizability and features.
 
         cv_baggingDT must be run first.
@@ -276,6 +276,7 @@ class PULearner():
         Args:
             pu_stats (dict): Output from cv_baggingDT.
             num_feats (int): How many features to consider.
+            fname (str): Filename if correlation plot should be saved.
 
         Returns:
             None (generates plots)
@@ -297,9 +298,8 @@ class PULearner():
         fig, ax = plt.subplots(1,1)
         hm = sns.heatmap(cm, ax=ax, cbar=True, annot=True, square=True, fmt='.2f',annot_kws={'size': 7}, yticklabels=cols.values, xticklabels=cols.values)
 
-        #figure = hm.get_figure()
-        #figure.savefig('corr_map.png')
-        self.save_plot('corr_map.png', fig, ax)
+        if fname:
+            self.save_plot(fname + '.png', fig, ax)
 
     def get_feat_importances(self, pu_stats, plot_format=''):
         """Process output from PU learning k-fold cross validation.
