@@ -17,8 +17,15 @@ Please also consider citing the original works that establish the underlying met
   
 > Mordelet, F.; Vert, J.-P. *A Bagging SVM to Learn from Positive and Unlabeled Examples.* Pattern Recognit. Lett. 2014, 37, 201−209.
 
-## Example Jupyter notebooks
-Example notebooks that show the functionality of mlmsynth can be found in the `example_notebooks` folder.
+## Getting mlmsynth
+The easiest way to get started with mlmsynth is to create a virtual environment with python3.6 and then
+`pip install mlmsynth`
+
+You can also create a virtual environment, clone this repo and do
+`python setup.py install` in the root directory.
+
+## Using mlmsynth
+An example Jupyter notebook called `example_nb.ipynb` shows the basic functionality of the package.
 
 ## About mlmsynth
 More information about using PU learning for materials synthesis prediction can be found in our publication: `DOI: 10.1021/acsnano.8b08014` https://pubs.acs.org/doi/abs/10.1021/acsnano.8b08014

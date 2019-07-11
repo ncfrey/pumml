@@ -390,7 +390,7 @@ class PULearner():
 
 
 class PUInteract():
-    def __init__(self, df_parent, pu_parent, df_child, pu_child, merge_on=(), cols=()):
+    def __init__(self, df_parent, pu_parent, df_child, pu_child, merge_on=(), feats=()):
         """Consider parent and child phase PU learning scores.
 
         This class looks at PU learning scores for parent bulk
@@ -409,7 +409,7 @@ class PUInteract():
             df_child (str): Child data filename.
             pu_child (dict): Output from PULearner.cv_baggingDT.
             merge_on (tuple): Column name(s) on which to merge.
-            cols (tuple): Column names to use as features. If empty, use all possible columns. 
+            feats (tuple): Column names to use as features. If empty, use all possible columns. 
 
         Attributes:
             merged_df (DataFrame): (Parent, child) pair data.
@@ -435,8 +435,9 @@ class PUInteract():
         df = pd.merge(df_parent, df_child, on=merge_on, how='outer', suffixes=['_p','_c'])
         df.drop(columns=['PU_label_p', 'PU_label_c'], inplace=True, axis=1)
         
-        if cols:
-            df = df[list(cols)]
+        if feats:
+            feat_names = [f + '_p' for f in feats] + [f + '_c' for f in feats]
+            df = df[feat_names]
 
         self.merged_df = df
         self.X = np.array(df)
