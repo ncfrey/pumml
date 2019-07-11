@@ -268,7 +268,7 @@ class PULearner():
 
         return lower, upper
 
-    def corr_heatmap(self, pu_stats, num_feats=10):
+    def corr_heatmap(self, pu_stats, num_feats=10, fname=''):
         """Plot correlation matrix between synthesizability and features.
 
         cv_baggingDT must be run first.
@@ -276,6 +276,7 @@ class PULearner():
         Args:
             pu_stats (dict): Output from cv_baggingDT.
             num_feats (int): How many features to consider.
+            fname (str): Filename if correlation plot should be saved.
 
         Returns:
             None (generates plots)
@@ -297,9 +298,8 @@ class PULearner():
         fig, ax = plt.subplots(1,1)
         hm = sns.heatmap(cm, ax=ax, cbar=True, annot=True, square=True, fmt='.2f',annot_kws={'size': 7}, yticklabels=cols.values, xticklabels=cols.values)
 
-        #figure = hm.get_figure()
-        #figure.savefig('corr_map.png')
-        self.save_plot('corr_map.png', fig, ax)
+        if fname:
+            self.save_plot(fname + '.png', fig, ax)
 
     def get_feat_importances(self, pu_stats, plot_format=''):
         """Process output from PU learning k-fold cross validation.
@@ -390,7 +390,7 @@ class PULearner():
 
 
 class PUInteract():
-    def __init__(self, df_parent, pu_parent, df_child, pu_child, merge_on=(), cols=()):
+    def __init__(self, df_parent, pu_parent, df_child, pu_child, merge_on=(), feats=()):
         """Consider parent and child phase PU learning scores.
 
         This class looks at PU learning scores for parent bulk
@@ -409,7 +409,7 @@ class PUInteract():
             df_child (str): Child data filename.
             pu_child (dict): Output from PULearner.cv_baggingDT.
             merge_on (tuple): Column name(s) on which to merge.
-            cols (tuple): Column names to use as features. If empty, use all possible columns. 
+            feats (tuple): Column names to use as features. If empty, use all possible columns. 
 
         Attributes:
             merged_df (DataFrame): (Parent, child) pair data.
@@ -435,8 +435,9 @@ class PUInteract():
         df = pd.merge(df_parent, df_child, on=merge_on, how='outer', suffixes=['_p','_c'])
         df.drop(columns=['PU_label_p', 'PU_label_c'], inplace=True, axis=1)
         
-        if cols:
-            df = df[list(cols)]
+        if feats:
+            feat_names = [f + '_p' for f in feats] + [f + '_c' for f in feats]
+            df = df[feat_names]
 
         self.merged_df = df
         self.X = np.array(df)

@@ -5,7 +5,7 @@ import numpy as np
 
 from monty.serialization import loadfn
 
-from mlmsynth import PULearner, PUInteract
+from mlmsynth.learners import PULearner, PUInteract
 
 test_dir = "test_files"
 
@@ -61,7 +61,7 @@ class PUInteractTest(unittest.TestCase):
         pass
 
     def test_clustering(self):
-        pui = PUInteract(self.max_df_fname, self.pu_parent, self.mx_df_fname, self.pu_child, merge_on=('M','X','n'), cols=('a_p', 'a_c', 'E_form_p', 'E_form_c', 'E_coh_p', 'E_coh_c', 'synth_score_p', 'synth_score_c'))
+        pui = PUInteract(self.max_df_fname, self.pu_parent, self.mx_df_fname, self.pu_child, merge_on=('M','X','n'), feats=('a', 'E_form','E_coh', 'synth_score'))
 
         # Test that clustering and GMM are generating labels
         kmeans_output = pui.do_kmeans()
