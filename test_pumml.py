@@ -5,7 +5,7 @@ import numpy as np
 
 from monty.serialization import loadfn
 
-from mlmsynth.learners import PULearner, PUInteract
+from pumml.learners import PULearner, PUInteract
 
 test_dir = "test_files"
 

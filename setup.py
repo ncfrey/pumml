@@ -4,15 +4,15 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="mlmsynth",
+    name="pumml",
     version="0.0.1",
     author="Nathan C. Frey, Jin Wang",
     maintainer="Nathan C. Frey",
     author_email="n.frey@seas.upenn.edu",
-    description="Machine Learning for Materials Synthesis (MLMS) is a code that adapts semi-supervised positive and unlabeled (PU) machine learning to predict the 'synthesizability' of bulk and 2D materials.",
+    description="Positive and Unlabeled Materials Machine Learning (pumml) is a code that uses semi-supervised positive and unlabeled (PU) machine learning to classify materials when data is incomplete and only examples of 'positive' materials are available.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ncfrey/mlms",
+    url="https://github.com/ncfrey/pumml",
     packages=setuptools.find_packages(),
     keywords=["VASP", "machine", "learning", "materials", "science", "DFT", "synthesis"],
     classifiers=[
