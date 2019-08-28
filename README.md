@@ -3,7 +3,7 @@
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
 
-# pumml
+# <img alt="pumml" src="pumml_logo.png" width="250">
 Positive and Unlabeled Materials Machine Learning (pumml) is a code that uses semi-supervised positive and unlabeled (PU) machine learning to classify materials when data is incomplete and only examples of "positive" materials are available. As an example, pumml was used to predict the "synthesizability" of bulk and 2D materials from "positive" examples of synthesized materials. 
 
 ## How to cite pumml
