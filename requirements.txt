@@ -57,7 +57,6 @@ ptyprocess==0.6.0
 py==1.8.0
 PyDispatcher==2.0.5
 Pygments==2.4.2
-pymatgen==2019.7.2
 pyparsing==2.4.0
 pyrsistent==0.15.3
 pytest==5.0.1
