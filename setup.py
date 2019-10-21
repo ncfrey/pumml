@@ -14,6 +14,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/ncfrey/pumml",
     packages=setuptools.find_packages(),
+    python_requires='>=3.6',
+    install_requires=['matplotlib>=3.1.1', 'monty>=2.0.4', 'numpy>=1.16.4', 'pandas>=0.24.2', 'scikit-learn>=0.21.2', 'scipy>=1.3.0', 'seaborn>=0.9.0'],
     keywords=["VASP", "machine", "learning", "materials", "science", "DFT", "synthesis"],
     classifiers=[
         "Programming Language :: Python :: 3",

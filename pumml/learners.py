@@ -9,7 +9,6 @@ from sklearn.utils import resample
 
 from mpl_toolkits.mplot3d import Axes3D
 
-import pymatgen as pmg
 from monty.serialization import dumpfn
 
 import pandas as pd
