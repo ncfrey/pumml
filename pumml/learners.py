@@ -1,3 +1,16 @@
+"""
+Deploy semi-supervised PU machine learning models.
+
+This module provides classes for training, testing, and deploying a PU
+learning model for predicting material synthesizability. Utility functions
+for plotting aid in visualizing and analyzing results.
+
+References:
+    [1] DOI: 10.1021/acsnano.8b08014
+    [2] DOI: 10.1145/1401890.1401920
+    [3] DOI: 10.1016/j.patrec.2013.06.010
+"""
+
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.cluster import KMeans
@@ -19,17 +32,6 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import rcParams
-
-"""
-This module provides classes for training, testing, and deploying a PU
-learning model for predicting material synthesizability. Utility functions
-for plotting aid in visualizing and analyzing results.
-
-References:
-    [1] DOI: 10.1021/acsnano.8b08014
-    [2] DOI: 10.1145/1401890.1401920
-    [3] DOI: 10.1016/j.patrec.2013.06.010
-"""
 
 __author__ = "Nathan C. Frey, Jin Wang"
 __copyright__ = "MIT License"
@@ -102,6 +104,7 @@ class PULearner:
                 training.
 
         """
+        
         print("Start PU Learning.")
 
         # Preprocess data and set attributes
