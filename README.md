@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.com/ncfrey/pumml.svg?branch=master)](https://travis-ci.com/ncfrey/pumml)
-[![Coverage Status](https://coveralls.io/repos/github/ncfrey/pumml/badge.svg?branch=master)](https://coveralls.io/github/ncfrey/pumml?branch=master)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
 
@@ -25,7 +24,7 @@ You can also create a virtual environment, clone this repo and do
 `python setup.py install` in the root directory.
 
 ## Using pumml
-An example Jupyter notebook called `example_nb.ipynb` shows the basic functionality of the package.
+In the `example_notebooks` folder you will find a Jupyter notebook called `basic_example.ipynb` that shows the basic functionality of the package. The notebook `materials_project_example.ipynb` shows how to use pumml to predict the synthetic accessibility of theoretical materials in the [Materials Project database](https://materialsproject.org/). Static images of Materials Project data are available on [figshare](https://figshare.com/account/home#/collections/4952793) for experimenting with pumml.
 
 ## About pumml
 More information about using PU learning for materials synthesis prediction can be found in our publication: `DOI: 10.1021/acsnano.8b08014` https://pubs.acs.org/doi/abs/10.1021/acsnano.8b08014
