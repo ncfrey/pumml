@@ -1,4 +1,5 @@
 import os
+import pytest
 import unittest
 import pandas as pd
 import numpy as np
@@ -7,7 +8,7 @@ from monty.serialization import loadfn
 
 from pumml.learners import PULearner, PUInteract
 
-test_dir = "../test_files/"
+test_dir = os.path.join(os.path.dirname(__file__), "../../test_files/")
 
 
 class PULearnerTest(unittest.TestCase):
@@ -77,4 +78,4 @@ class PUInteractTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    pytest.main()
