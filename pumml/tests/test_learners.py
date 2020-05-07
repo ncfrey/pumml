@@ -16,9 +16,6 @@ class PULearnerTest(unittest.TestCase):
         cls.max_df_fname = os.path.join(test_dir, "MAX_dataset.json")
         cls.mx_df_fname = os.path.join(test_dir, "MX_dataset.json")
         cls.pul = PULearner()
-        cls.pu_stats = cls.pul.cv_baggingDT(
-            pu_data=cls.max_df_fname, repeats=5, bags=10
-        )
 
     def setUp(self):
         pass
@@ -27,7 +24,9 @@ class PULearnerTest(unittest.TestCase):
         pass
 
     def test_cv_baggingDT(self):
-        pu_stats = self.pu_stats
+        pu_stats = self.pul.cv_baggingDT(
+            pu_data=self.max_df_fname, splits=10, repeats=3, bags=100
+        )
 
         # Test that reasonable TPR accuracy is achieved
         accuracy = pu_stats["metrics"][0]
@@ -38,10 +37,6 @@ class PULearnerTest(unittest.TestCase):
         upper_ci = pu_stats["metrics"][2]
         self.assertLess(upper_ci - lower_ci, 0.50)
 
-    def test_get_feat_importances(self):
-        pu_stats = self.pu_stats
-        self.pul.get_feat_importances()
-
 
 class PUInteractTest(unittest.TestCase):
     @classmethod
@@ -50,9 +45,9 @@ class PUInteractTest(unittest.TestCase):
         cls.mx_df_fname = os.path.join(test_dir, "MX_dataset.json")
         cls.pul = PULearner()
         cls.pu_parent = cls.pul.cv_baggingDT(
-            pu_data=cls.max_df_fname, repeats=2, bags=10
+            pu_data=cls.max_df_fname, splits=10, repeats=2, bags=10
         )
-        cls.pu_child = cls.pul.cv_baggingDT(pu_data=cls.mx_df_fname, repeats=2, bags=10)
+        cls.pu_child = cls.pul.cv_baggingDT(pu_data=cls.mx_df_fname, splits=10, repeats=2, bags=10)
 
     def setUp(self):
         pass
