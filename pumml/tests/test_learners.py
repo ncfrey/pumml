@@ -7,7 +7,7 @@ from monty.serialization import loadfn
 
 from pumml.learners import PULearner, PUInteract
 
-test_dir = "../../test_files"
+test_dir = "../test_files/"
 
 
 class PULearnerTest(unittest.TestCase):
