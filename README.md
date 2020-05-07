@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.com/ncfrey/pumml.svg?branch=master)](https://travis-ci.com/ncfrey/pumml)
+![pumml](https://github.com/ncfrey/pumml/workflows/pumml/badge.svg)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 
 
 # <img alt="pumml" src="pumml_logo.png" width="250">
