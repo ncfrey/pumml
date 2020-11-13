@@ -362,14 +362,14 @@ class PUPredict:
 
         return df_extracted
 
-    def _append_data(df_extracted, k):
+    def _append_data(df_extracted, fblock):
         """
 
        Extract features using Matminer from the 'structure' column in df_input
 
         Args:
             df_extracted(DataFrame): Pandas DataFrame which contains features of input samples extracted using Matminer
-            k (boolean value): 0 if it belongs to F-block, 1 if it belongs to Non F block
+            fblock (boolean value): 0 if it belongs to F-block, 1 if it belongs to Non F block
 
 
         Returns:
@@ -382,7 +382,7 @@ class PUPredict:
         input_ids = df_extracted.material_id.values
 
         # If it belongs to 'F-block'
-        if k == 0:
+        if fblock == 0:
             # F-Block training Dataset
             fblock_features = pd.read_json(
                 test_dir
