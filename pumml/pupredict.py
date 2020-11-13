@@ -362,7 +362,7 @@ class PUPredict:
 
         return df_extracted
 
-    def _append_data(df_extracted, k):
+    def _append_data(df_extracted, fblock):
         """
 
        Extract features using Matminer from the 'structure' column in df_input
