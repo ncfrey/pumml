@@ -350,7 +350,7 @@ class PUPredict:
 
         return df_extracted
 
-    def _append_data(df_extracted, fblock):
+    def _append_data(self, df_extracted, fblock):
         """Append featurized data.
 
         Args:
