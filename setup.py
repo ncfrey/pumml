@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pumml",
-    version="0.0.1",
+    version="0.0.2",
     author="Nathan C. Frey, Jin Wang",
     maintainer="Nathan C. Frey",
     author_email="n.frey@seas.upenn.edu",
@@ -15,7 +15,9 @@ setuptools.setup(
     url="https://github.com/ncfrey/pumml",
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
-    install_requires=['matplotlib>=3.1.1', 'monty>=2.0.4', 'numpy>=1.16.4, <=1.17.2', 'pandas==0.24.2', 'scikit-learn>=0.21.2', 'scipy>=1.3.0', 'seaborn>=0.9.0'],
+    install_requires=['matplotlib>=3.1.1', 'monty>=2.0.4', 'numpy>=1.16.4', 'pandas>=1.14', 'scikit-learn>=0.21.2', 'scipy>=1.3.0', 'seaborn>=0.9.0',
+        'matminer==0.6.3',
+        'pymatgen'=='2020.11.11'],
     keywords=["VASP", "machine", "learning", "materials", "science", "DFT", "synthesis"],
     classifiers=[
         "Programming Language :: Python :: 3",
