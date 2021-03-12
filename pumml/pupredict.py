@@ -277,7 +277,7 @@ class PUPredict:
 
         return fblock, mp_id, synth_score, df_input
 
-    def _extract_features(df_input):
+    def _extract_features(self, df_input):
         """
         Extract features using Matminer from the 'structure' column in
             df_input
@@ -301,9 +301,7 @@ class PUPredict:
         mfeat = Meredig()
         cefeat = CohesiveEnergy()
 
-        df_input["density_test"] = df_input.structure.apply(
-            lambda x: dfeat.featurize(x)[0]
-        )
+        df_input["density"] = df_input.structure.apply(lambda x: dfeat.featurize(x)[0])
         df_input["vpa"] = df_input.structure.apply(lambda x: dfeat.featurize(x)[1])
         df_input["packing fraction"] = df_input.structure.apply(
             lambda x: dfeat.featurize(x)[2]
@@ -392,12 +390,12 @@ class PUPredict:
 
         return input_ids, df
 
-    def _do_pulearner(input_ids, df):
+    def _do_pulearner(self, input_ids, df):
         """Train the model using PULearner.
 
         Args:
         df (DataFrame): Pandas DataFrame which contains features of input
-            samples extracted using Matmimer along with training data
+            samples extracted using Matminer along with training data
         input_ids (numpy array): MP-IDs of updated input compounds
 
 
@@ -406,6 +404,9 @@ class PUPredict:
                 given sample.
 
         """
+
+        # Fix missing values
+        df = df.fillna(0)
 
         # Run PUMML
         df.to_json("test.json")
