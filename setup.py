@@ -17,7 +17,7 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=['matplotlib>=3.1.1', 'monty>=2.0.4', 'numpy==1.19.4', 'pandas==1.1.4', 'scikit-learn==0.23.2', 'scipy>=1.3.0', 'seaborn>=0.9.0',
         'matminer==0.6.3',
-        'pymatgen==2020.11.11'],
+        'pymatgen==2024.2.20'],
     keywords=["VASP", "machine", "learning", "materials", "science", "DFT", "synthesis"],
     classifiers=[
         "Programming Language :: Python :: 3",
